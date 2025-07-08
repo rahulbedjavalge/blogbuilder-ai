@@ -5,6 +5,10 @@ const nextConfig = {
   images: {
     domains: ['plausible.io'],
   },
+  experimental: {
+    esmExternals: false,
+  },
+  transpilePackages: ['react-markdown'],
 }
 
 module.exports = nextConfig

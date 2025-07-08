@@ -3,12 +3,14 @@ import { GetStaticProps } from 'next'
 import Head from 'next/head'
 import BlogCard from '../components/BlogCard'
 import { supabase, Blog } from '../utils/supabaseClient'
+import { useAuth } from '../contexts/AuthContext'
 
 interface HomeProps {
   blogs: Blog[]
 }
 
 export default function Home({ blogs }: HomeProps) {
+  const { user } = useAuth()
   const [word, setWord] = useState('')
   const [isGenerating, setIsGenerating] = useState(false)
   const [generatedBlog, setGeneratedBlog] = useState<Blog | null>(null)
@@ -47,12 +49,26 @@ export default function Home({ blogs }: HomeProps) {
     const trimmedWord = word.trim()
     if (!trimmedWord || !validateWord(trimmedWord)) return
 
+    // Check if user is authenticated
+    if (!user) {
+      alert('Please sign in to create blogs.')
+      return
+    }
+
     setIsGenerating(true)
     try {
+      const { data: { session } } = await supabase.auth.getSession()
+      
+      if (!session) {
+        alert('Please sign in to create blogs.')
+        return
+      }
+
       const response = await fetch('/api/generate', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session.access_token}`,
         },
         body: JSON.stringify({ word: trimmedWord }),
       })
@@ -112,10 +128,12 @@ export default function Home({ blogs }: HomeProps) {
             </div>
             <button
               onClick={generateBlog}
-              disabled={isGenerating || !word.trim() || !!validationError}
+              disabled={isGenerating || !word.trim() || !!validationError || !user}
               className="px-8 py-3 bg-primary-600 text-white rounded-lg hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
-              {isGenerating ? 'Generating...' : 'Generate Blog'}
+              {isGenerating ? 'Generating...' : 
+               !user ? 'Sign In to Generate Blog' : 
+               'Generate Blog'}
             </button>
           </div>
 
@@ -125,6 +143,7 @@ export default function Home({ blogs }: HomeProps) {
               <li>Use only <strong>one word</strong> (no spaces)</li>
               <li>Use only <strong>letters</strong> (no numbers or symbols)</li>
               <li>Try words like: technology, adventure, creativity, freedom</li>
+              <li className="text-blue-600"><strong>Sign in required</strong> to create and save blogs</li>
             </ul>
           </div>
 

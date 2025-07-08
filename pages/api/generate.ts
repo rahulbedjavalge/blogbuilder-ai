@@ -41,16 +41,23 @@ export default async function handler(
   }
 
   try {
-    // Get user from session (optional for homepage usage)
-    let userId = null
+    // Get user from session (required for blog creation)
     const authHeader = req.headers.authorization
-    if (authHeader) {
-      const token = authHeader.replace('Bearer ', '')
-      const { data: { user }, error: authError } = await supabase.auth.getUser(token)
-      if (!authError && user) {
-        userId = user.id
-      }
+    if (!authHeader) {
+      return res.status(401).json({ message: 'Authentication required. Please sign in to create blogs.' })
     }
+
+    const token = authHeader.replace('Bearer ', '')
+    if (!token) {
+      return res.status(401).json({ message: 'Authentication required. Please sign in to create blogs.' })
+    }
+
+    const { data: { user }, error: authError } = await supabase.auth.getUser(token)
+    if (authError || !user) {
+      return res.status(401).json({ message: 'Authentication required. Please sign in to create blogs.' })
+    }
+
+    const userId = user.id
 
     // Generate blog content using OpenRouter
     const blogContent = await generateBlogWithAI(trimmedWord)
