@@ -25,13 +25,6 @@ export default function BlogPost({ blog }: BlogPostProps) {
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content={blog.title} />
         <meta name="twitter:description" content={blog.content_md.substring(0, 160)} />
-        
-        {/* Google AdSense Script */}
-        <script 
-          async 
-          src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_CONFIG.publisherId}`}
-          crossOrigin="anonymous"
-        />
       </Head>
 
       <article className="max-w-4xl mx-auto px-4 py-8">
@@ -62,15 +55,6 @@ export default function BlogPost({ blog }: BlogPostProps) {
             </div>
           </div>
         </header>
-
-        {/* Google Ads - Top */}
-        <div className="ads mb-8 flex justify-center">
-          <AdSense 
-            adSlot={ADSENSE_CONFIG.adUnits.postTop} 
-            adFormat="auto"
-            className="w-full max-w-4xl"
-          />
-        </div>
 
         {/* Blog Content */}
         <div className="prose prose-lg max-w-none">
@@ -136,31 +120,6 @@ export default function BlogPost({ blog }: BlogPostProps) {
           </ReactMarkdown>
         </div>
 
-        {/* Google Ads - Middle */}
-        <div className="ads my-8 flex justify-center">
-          <AdSense 
-            adSlot={ADSENSE_CONFIG.adUnits.postMiddle} 
-            adFormat="rectangle"
-            className="w-full max-w-md"
-          />
-        </div>
-
-        {/* Custom Affiliate Deal */}
-        <div className="custom-deal bg-gradient-to-r from-primary-500 to-primary-600 text-white p-6 rounded-lg mb-8">
-          <h3 className="text-xl font-bold mb-2">🔥 Special Deal!</h3>
-          <p className="mb-4">
-            Get exclusive access to premium tools and resources related to this topic.
-          </p>
-          <a
-            href="https://example.com/deal?ref=blogbuilder"
-            className="inline-block bg-white text-primary-600 px-6 py-2 rounded-lg font-medium hover:bg-gray-100 transition-colors"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Claim Your Deal →
-          </a>
-        </div>
-
         {/* Social Share Buttons */}
         <div className="flex items-center gap-4 pt-8 border-t border-gray-200">
           <span className="text-gray-600 font-medium">Share this article:</span>
@@ -192,14 +151,6 @@ export default function BlogPost({ blog }: BlogPostProps) {
           </div>
         </div>
 
-        {/* Google Ads - Bottom */}
-        <div className="ads mt-8 flex justify-center">
-          <AdSense 
-            adSlot={ADSENSE_CONFIG.adUnits.postBottom} 
-            adFormat="auto"
-            className="w-full max-w-4xl"
-          />
-        </div>
       </article>
     </>
   )
