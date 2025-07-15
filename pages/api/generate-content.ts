@@ -50,14 +50,35 @@ async function generateBlogWithAI(word: string): Promise<string> {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      model: 'openrouter/cypher-alpha:free',
+      model: 'tngtech/deepseek-r1t2-chimera:free',
       messages: [
         {
           role: 'system',
           content: `You are a professional blog writer. Write engaging, informative, and well-structured blog posts. 
                    Format your response in markdown with proper headings, paragraphs, and structure.
                    Make the content SEO-friendly and reader-engaging.
-                   The blog should be at least 800 words long.`
+                   The blog should be at least 800 words long.
+                   
+                   IMPORTANT - TITLE CREATIVITY RULES:
+                   - NEVER use repetitive title patterns like "Unlocking the Power of...", "Unleashing the Power of...", "The Power of...", "Beyond...", "The Art of...", "Mastering..."
+                   - AVOID overused phrases like "power", "unlocking", "unleashing", "mastering", "ultimate guide", "secrets of"
+                   - VARY your title beginnings - don't always start with "The" - use different starting words and structures
+                   - CREATE unique, creative, and varied title structures for each word
+                   - Use fresh angles, unexpected perspectives, metaphors, or thought-provoking questions
+                   - Make titles that stand out and avoid generic business/tech jargon
+                   - Consider different approaches: storytelling, problem-solving, future-focused, historical, personal, scientific, cultural, etc.
+                   
+                   Title Examples for Inspiration (DO NOT COPY, just use as style reference):
+                   - "When [Word] Meets Reality: A Journey Through..."
+                   - "Why [Word] Matters More Than You Think"
+                   - "Hidden Truths About [Word]: What We Never Knew"
+                   - "[Word] in the Wild: Stories from the Field"
+                   - "Breaking Down [Word]: A Fresh Perspective"
+                   - "How [Word] Changed Everything We Know"
+                   - "Living with [Word]: A Modern Dilemma"
+                   - "[Word] Through the Ages: Then and Now"
+                   - "Inside [Word]: A Deep Dive"
+                   - "Rethinking [Word]: New Perspectives"`
         },
         {
           role: 'user',
@@ -69,7 +90,7 @@ async function generateBlogWithAI(word: string): Promise<string> {
         }
       ],
       temperature: 0.7,
-      max_tokens: 2000
+      max_tokens: 4000
     })
   })
 
