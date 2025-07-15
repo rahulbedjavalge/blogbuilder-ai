@@ -1,7 +1,10 @@
 {
   "functions": {
     "pages/api/generate.ts": {
-      "maxDuration": 30
+      "maxDuration": 60
+    },
+    "pages/api/generate-content.ts": {
+      "maxDuration": 60
     }
   },
   "regions": ["cle1"],
