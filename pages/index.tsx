@@ -15,6 +15,7 @@ export default function Home({ blogs }: HomeProps) {
   const [isGenerating, setIsGenerating] = useState(false)
   const [generatedBlog, setGeneratedBlog] = useState<Blog | null>(null)
   const [validationError, setValidationError] = useState('')
+  const [loadingStage, setLoadingStage] = useState('')
 
   const validateWord = (input: string) => {
     const trimmed = input.trim()
@@ -56,6 +57,8 @@ export default function Home({ blogs }: HomeProps) {
     }
 
     setIsGenerating(true)
+    setLoadingStage('Preparing AI generation...')
+    
     try {
       const { data: { session } } = await supabase.auth.getSession()
       
@@ -64,6 +67,8 @@ export default function Home({ blogs }: HomeProps) {
         return
       }
 
+      setLoadingStage('AI is creating your blog content...')
+      
       const response = await fetch('/api/generate', {
         method: 'POST',
         headers: {
@@ -78,12 +83,16 @@ export default function Home({ blogs }: HomeProps) {
         throw new Error(errorData.message || 'Failed to generate blog')
       }
 
+      setLoadingStage('Finalizing and saving your blog...')
+      
       const data = await response.json()
       setGeneratedBlog(data.blog)
       setWord('') // Clear the input after successful generation
+      setLoadingStage('')
     } catch (error) {
       console.error('Error generating blog:', error)
       alert(error instanceof Error ? error.message : 'Failed to generate blog. Please try again.')
+      setLoadingStage('')
     } finally {
       setIsGenerating(false)
     }
@@ -129,13 +138,40 @@ export default function Home({ blogs }: HomeProps) {
             <button
               onClick={generateBlog}
               disabled={isGenerating || !word.trim() || !!validationError || !user}
-              className="px-8 py-3 bg-primary-600 text-white rounded-lg hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="px-8 py-3 bg-primary-600 text-white rounded-lg hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors relative"
             >
-              {isGenerating ? 'Generating...' : 
-               !user ? 'Sign In to Generate Blog' : 
-               'Generate Blog'}
+              {isGenerating ? (
+                <div className="flex items-center justify-center">
+                  <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  Generating...
+                </div>
+              ) : !user ? 'Sign In to Generate Blog' : 'Generate Blog'}
             </button>
           </div>
+
+          {isGenerating && (
+            <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+              <div className="flex items-center justify-center mb-3">
+                <svg className="animate-spin h-6 w-6 text-blue-600 mr-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                <span className="text-blue-800 font-medium">{loadingStage || 'Creating your unique blog post...'}</span>
+              </div>
+              <div className="w-full bg-blue-200 rounded-full h-2">
+                <div className="bg-blue-600 h-2 rounded-full animate-pulse" style={{ width: '70%' }}></div>
+              </div>
+              <p className="text-sm text-blue-700 mt-2 text-center">
+                ✨ AI is crafting a creative title and engaging content for "{word}"
+              </p>
+              <p className="text-xs text-blue-600 mt-1 text-center">
+                This usually takes 30-60 seconds...
+              </p>
+            </div>
+          )}
 
           <div className="text-sm text-gray-600 mb-4">
             <p>💡 <strong>Tips:</strong></p>
