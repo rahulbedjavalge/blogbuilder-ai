@@ -4,6 +4,7 @@ import { supabase, Blog } from '../../utils/supabaseClient'
 import { format } from 'date-fns'
 import ReactMarkdown from 'react-markdown'
 import Head from 'next/head'
+import { useEffect, useState } from 'react'
 
 interface BlogPostProps {
   blog: Blog
@@ -14,6 +15,14 @@ interface Params extends ParsedUrlQuery {
 }
 
 export default function BlogPost({ blog }: BlogPostProps) {
+  const [shareUrl, setShareUrl] = useState('')
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setShareUrl(window.location.href)
+    }
+  }, [])
+
   return (
     <>
       <Head>
@@ -125,7 +134,13 @@ export default function BlogPost({ blog }: BlogPostProps) {
           <span className="text-gray-600 font-medium">Share this article:</span>
           <div className="flex gap-2">
             <a
-              href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(blog.title)}&url=${encodeURIComponent(typeof window !== 'undefined' ? window.location.href : '')}`}
+              href={
+                shareUrl
+                  ? `https://twitter.com/intent/tweet?text=${encodeURIComponent(
+                      blog.title
+                    )}&url=${encodeURIComponent(shareUrl)}`
+                  : '#'
+              }
               target="_blank"
               rel="noopener noreferrer"
               className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors"
@@ -133,7 +148,13 @@ export default function BlogPost({ blog }: BlogPostProps) {
               Twitter
             </a>
             <a
-              href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(typeof window !== 'undefined' ? window.location.href : '')}`}
+              href={
+                shareUrl
+                  ? `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(
+                      shareUrl
+                    )}`
+                  : '#'
+              }
               target="_blank"
               rel="noopener noreferrer"
               className="bg-blue-700 text-white px-4 py-2 rounded hover:bg-blue-800 transition-colors"
@@ -141,7 +162,13 @@ export default function BlogPost({ blog }: BlogPostProps) {
               Facebook
             </a>
             <a
-              href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(typeof window !== 'undefined' ? window.location.href : '')}`}
+              href={
+                shareUrl
+                  ? `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(
+                      shareUrl
+                    )}`
+                  : '#'
+              }
               target="_blank"
               rel="noopener noreferrer"
               className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors"
